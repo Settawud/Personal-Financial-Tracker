@@ -1,7 +1,7 @@
 import { useSummary } from "@/hooks/useSummary";
 import { useDateFilter } from "@/hooks/useDateFilter";
 import { SummaryCard } from "@/components/summary/SummaryCard";
-import { SummaryBar } from "@/components/summary/SummaryBar";
+import { CategoryChart } from "@/components/summary/CategoryChart";
 import { QuickFilter } from "@/components/filter/QuickFilter";
 import { DateRangePicker } from "@/components/filter/DateRangePicker";
 
@@ -11,7 +11,7 @@ export function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
+      <h1 className="text-xl sm:text-2xl font-bold">Dashboard</h1>
 
       <div className="space-y-2">
         <QuickFilter preset={preset} onChange={setPreset} />
@@ -26,7 +26,7 @@ export function Dashboard() {
         <p className="text-muted-foreground">ไม่มีข้อมูล</p>
       ) : (
         <>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-3">
             <SummaryCard title="รายได้" value={summary.totalIncome} icon="💰" variant="income" />
             <SummaryCard title="รายจ่าย" value={summary.totalExpense} icon="💸" variant="expense" />
             <SummaryCard title="คงเหลือ" value={summary.balance} icon="📊" variant={summary.balance >= 0 ? "balance" : "negative"} />
@@ -35,7 +35,7 @@ export function Dashboard() {
           {summary.expenseByCategory.length > 0 && (
             <div className="bg-card rounded-lg border p-4">
               <h2 className="text-lg font-semibold mb-3">รายจ่ายตามหมวดหมู่</h2>
-              <SummaryBar items={summary.expenseByCategory} total={summary.totalExpense} />
+              <CategoryChart items={summary.expenseByCategory} total={summary.totalExpense} />
             </div>
           )}
         </>

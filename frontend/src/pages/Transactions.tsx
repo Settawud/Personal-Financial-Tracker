@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useTransactions, useCreateTransaction, useUpdateTransaction, useDeleteTransaction } from "@/hooks/useTransactions";
-import { useDateFilter } from "@/hooks/useDateFilter";
+import { useTransactionFilters } from "@/hooks/useTransactionFilters";
 import { TransactionTable } from "@/components/transaction/TransactionTable";
 import { TransactionForm } from "@/components/transaction/TransactionForm";
 import { DeleteDialog } from "@/components/transaction/DeleteDialog";
 import { QuickFilter } from "@/components/filter/QuickFilter";
 import { DateRangePicker } from "@/components/filter/DateRangePicker";
+import { TypeFilter } from "@/components/filter/TypeFilter";
+import { CategoryFilter } from "@/components/filter/CategoryFilter";
 import { Button } from "@/components/ui/button";
 import type { CreateTransactionPayload, Transaction } from "@/types/transaction";
 
@@ -14,12 +16,28 @@ export function Transactions() {
   const [editing, setEditing] = useState<Transaction | null>(null);
   const [deleting, setDeleting] = useState<Transaction | null>(null);
 
-  const { preset, setPreset, customFrom, setCustomFrom, customTo, setCustomTo, filters } = useDateFilter();
+  const {
+    preset, setPreset,
+    customFrom, setCustomFrom,
+    customTo, setCustomTo,
+    typeFilter, setTypeFilter,
+    categoryFilter, setCategoryFilter,
+    dateFilters,
+  } = useTransactionFilters();
 
-  const { data: transactions = [], isLoading } = useTransactions(filters);
+  const { data: transactions = [], isLoading } = useTransactions(dateFilters);
   const createMutation = useCreateTransaction();
   const updateMutation = useUpdateTransaction();
   const deleteMutation = useDeleteTransaction();
+
+  // Client-side filter by type and category
+  const filteredTransactions = useMemo(() => {
+    return transactions.filter((t) => {
+      if (typeFilter !== "all" && t.type !== typeFilter) return false;
+      if (categoryFilter !== "all" && t.categoryId !== categoryFilter) return false;
+      return true;
+    });
+  }, [transactions, typeFilter, categoryFilter]);
 
   const handleSubmit = (payload: CreateTransactionPayload) => {
     if (editing) {
@@ -55,8 +73,13 @@ export function Transactions() {
         </Button>
       </div>
 
+      {/* Filters */}
       <div className="space-y-2">
-        <QuickFilter preset={preset} onChange={setPreset} />
+        <div className="flex flex-wrap items-center gap-2">
+          <QuickFilter preset={preset} onChange={setPreset} />
+          <TypeFilter value={typeFilter} onChange={setTypeFilter} />
+          <CategoryFilter value={categoryFilter} onChange={setCategoryFilter} typeFilter={typeFilter} />
+        </div>
         {preset === "custom" && (
           <DateRangePicker from={customFrom} to={customTo} onFromChange={setCustomFrom} onToChange={setCustomTo} />
         )}
@@ -78,15 +101,15 @@ export function Transactions() {
 
       {isLoading ? (
         <div className="animate-pulse text-muted-foreground">กำลังโหลด...</div>
-      ) : transactions.length === 0 ? (
+      ) : filteredTransactions.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
-          <p className="text-lg">ยังไม่มีรายการ</p>
-          <p className="text-sm">คลิก "เพิ่มรายการ" เพื่อเริ่มบันทึกธุรกรรม</p>
+          <p className="text-lg">ไม่มีรายการที่ตรงกับตัวกรอง</p>
+          <p className="text-sm">ลองเปลี่ยนตัวกรองหรือเพิ่มรายการใหม่</p>
         </div>
       ) : (
         <div className="bg-card rounded-lg border">
           <TransactionTable
-            transactions={transactions}
+            transactions={filteredTransactions}
             onEdit={setEditing}
             onDelete={setDeleting}
           />
