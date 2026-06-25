@@ -48,10 +48,10 @@ export function Transactions() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <h1 className="text-2xl font-bold">Transactions</h1>
-        <Button onClick={() => setShowForm(true)} className="flex items-center gap-1">
-          <span>+</span> เพิ่มรายการ
+      <div className="flex items-center justify-between gap-2">
+        <h1 className="text-xl sm:text-2xl font-bold">Transactions</h1>
+        <Button onClick={() => setShowForm(true)} size="sm" className="flex items-center gap-1">
+          <span>+</span> เพิ่ม
         </Button>
       </div>
 

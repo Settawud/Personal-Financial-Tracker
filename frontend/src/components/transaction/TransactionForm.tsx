@@ -35,11 +35,15 @@ export function TransactionForm({ onSubmit, onCancel, defaultValues, isPending }
   const categories = categoryData ?? (isError ? FALLBACK_CATEGORIES : []);
   const filteredCategories = categories.filter((c) => c.type === type);
 
+  // Reset categoryId when type changes (EXPENSE↔INCOME)
   useEffect(() => {
-    if (!defaultValues && filteredCategories.length > 0 && !categoryId) {
+    if (defaultValues) return;
+    if (filteredCategories.length > 0) {
       setCategoryId(filteredCategories[0].id);
+    } else {
+      setCategoryId("");
     }
-  }, [type, filteredCategories, categoryId, defaultValues]);
+  }, [type]);
 
   useEffect(() => {
     if (defaultValues) {
