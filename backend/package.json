@@ -4,8 +4,6 @@
   "private": true,
   "scripts": {
     "dev": "bun run --watch src/index.ts",
-    "build": "bun build src/index.ts --outdir dist --target bun",
-    "postinstall": "prisma generate",
     "start": "bun run src/index.ts",
     "db:migrate": "prisma migrate deploy",
     "db:seed": "bun run prisma/seed.ts",
