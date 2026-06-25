@@ -5,9 +5,10 @@
   "scripts": {
     "dev": "bun run --watch src/index.ts",
     "build": "bun build src/index.ts --outdir dist --target bun",
-    "start": "bun run dist/index.js",
-    "db:migrate": "prisma migrate dev",
-    "db:seed": "prisma db seed",
+    "postinstall": "prisma generate",
+    "start": "bun run src/index.ts",
+    "db:migrate": "prisma migrate deploy",
+    "db:seed": "bun run prisma/seed.ts",
     "db:studio": "prisma studio"
   },
   "prisma": {
@@ -17,11 +18,11 @@
     "@elysiajs/cors": "^1.2.0",
     "@prisma/client": "^6.5.0",
     "elysia": "^1.2.0",
+    "prisma": "^6.5.0",
     "zod": "^3.24.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
-    "prisma": "^6.5.0",
     "typescript": "^5.7.0"
   }
 }
