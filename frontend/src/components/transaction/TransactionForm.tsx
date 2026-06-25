@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
+import { FALLBACK_CATEGORIES } from "@/lib/constants";
 import { formatDateInput } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import type { Category, CreateTransactionPayload, Transaction } from "@/types/transaction";
@@ -21,15 +22,17 @@ export function TransactionForm({ onSubmit, onCancel, defaultValues, isPending }
   const [note, setNote] = useState(defaultValues?.note ?? "");
   const [date, setDate] = useState(defaultValues?.date ? formatDateInput(defaultValues.date) : today);
 
-  const { data: categoryData } = useQuery({
+  const { data: categoryData, isError } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
       const res = await api.categories.list();
       return res.data as Category[];
     },
+    retry: 1,
   });
 
-  const categories = categoryData ?? [];
+  // Use API data if available, otherwise use hardcoded fallback
+  const categories = categoryData ?? (isError ? FALLBACK_CATEGORIES : []);
   const filteredCategories = categories.filter((c) => c.type === type);
 
   useEffect(() => {
