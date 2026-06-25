@@ -1,0 +1,21 @@
+.env
+node_modules/
+dist/
+.turbo/
+bun.lock
+
+# Database
+*.db
+*.db-journal
+backend/prisma/migrations/
+
+# Skills (local agent config)
+.agents/
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# Docker volumes
+pgdata/

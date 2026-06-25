@@ -1,0 +1,12 @@
+{
+  "name": "expense-tracker",
+  "private": true,
+  "workspaces": ["frontend", "backend"],
+  "scripts": {
+    "dev": "bun run --cwd backend dev & bun run --cwd frontend dev",
+    "db:up": "docker compose up -d",
+    "db:migrate": "bun run --cwd backend prisma migrate dev",
+    "db:seed": "bun run --cwd backend prisma db seed",
+    "db:setup": "bun run db:migrate && bun run db:seed"
+  }
+}
