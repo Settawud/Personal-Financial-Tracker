@@ -3,13 +3,18 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum TxType {
+  INCOME
+  EXPENSE
 }
 
 model Transaction {
   id         String   @id @default(cuid())
-  amount     Float
+  amount     Decimal  @db.Decimal(10, 2)
   type       TxType
   category   Category @relation(fields: [categoryId], references: [id])
   categoryId String
@@ -25,9 +30,4 @@ model Category {
   type         TxType
   icon         String?
   transactions Transaction[]
-}
-
-enum TxType {
-  INCOME
-  EXPENSE
 }

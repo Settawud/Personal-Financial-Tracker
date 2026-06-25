@@ -37,7 +37,7 @@ export const summaryService = {
     const expenseMap = new Map<string, { categoryId: string; categoryName: string; icon: string | null; total: number }>();
 
     for (const t of transactions) {
-      const amount = t.amount;
+      const amount = Number(t.amount.toString());
 
       if (t.type === "INCOME") {
         totalIncome += amount;

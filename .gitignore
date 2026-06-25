@@ -7,7 +7,6 @@ bun.lock
 # Database
 *.db
 *.db-journal
-backend/prisma/migrations/
 
 # Skills (local agent config)
 .agents/

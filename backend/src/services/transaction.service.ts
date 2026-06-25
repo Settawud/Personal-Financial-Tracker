@@ -16,6 +16,10 @@ export interface TransactionFilters {
   to?: string;
 }
 
+function toNumber(amount: { toString(): string }): number {
+  return Number(amount.toString());
+}
+
 export const transactionService = {
   async findAll(filters?: TransactionFilters) {
     const where: Record<string, unknown> = {};
@@ -26,22 +30,34 @@ export const transactionService = {
       if (filters.to) (where.date as Record<string, Date>).lte = new Date(filters.to);
     }
 
-    return prisma.transaction.findMany({
+    const transactions = await prisma.transaction.findMany({
       where,
       include: { category: true },
       orderBy: { date: "desc" },
     });
+
+    return transactions.map((t) => ({
+      ...t,
+      amount: toNumber(t.amount),
+    }));
   },
 
   async findById(id: string) {
-    return prisma.transaction.findUnique({
+    const transaction = await prisma.transaction.findUnique({
       where: { id },
       include: { category: true },
     });
+
+    if (!transaction) return null;
+
+    return {
+      ...transaction,
+      amount: toNumber(transaction.amount),
+    };
   },
 
   async create(input: CreateTransactionInput) {
-    return prisma.transaction.create({
+    const transaction = await prisma.transaction.create({
       data: {
         amount: input.amount,
         type: input.type,
@@ -51,6 +67,11 @@ export const transactionService = {
       },
       include: { category: true },
     });
+
+    return {
+      ...transaction,
+      amount: toNumber(transaction.amount),
+    };
   },
 
   async update(id: string, input: UpdateTransactionInput) {
@@ -61,11 +82,16 @@ export const transactionService = {
     if (input.note !== undefined) data.note = input.note;
     if (input.date !== undefined) data.date = new Date(input.date);
 
-    return prisma.transaction.update({
+    const transaction = await prisma.transaction.update({
       where: { id },
       data,
       include: { category: true },
     });
+
+    return {
+      ...transaction,
+      amount: toNumber(transaction.amount),
+    };
   },
 
   async delete(id: string) {
